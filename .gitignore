@@ -1,0 +1,10 @@
+build
+mx.scratch
+!.settings
+.clangd
+.vscode
+.mxproject
+*.o
+*.obj
+*.su
+*.idx
