@@ -27,5 +27,6 @@ typedef struct {
 
 void Logger_Init(UART_HandleTypeDef *huart);
 void Logger_Log(const LogFrame *frame);
+void Logger_SendVOFA(const IMU_Attitude *att);
 
 #endif /* DATA_LOGGER_H */

@@ -101,6 +101,9 @@
 /* 每 N 次控制循环输出一行日志 (1=每次, 10=每10次) */
 #define LOG_DIVIDER         5       // 500Hz / 5 = 100Hz日志输出
 
+/* VOFA+ 上位机 JustFloat 输出开关 (启用则关闭文本日志) */
+#define VOFA_OUTPUT_ENABLE  1       // 1=VOFA+陀螺仪3D可视化, 0=文本日志
+
 /* ==================== 引脚定义 (按实际接线修改) ==================== */
 #define SERVO_TIM           htim2
 #define SERVO_CHANNEL       TIM_CHANNEL_1

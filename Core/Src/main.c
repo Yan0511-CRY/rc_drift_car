@@ -306,6 +306,9 @@ static void Control_Loop_500Hz(void) {
     if (log_counter >= LOG_DIVIDER) {
         log_counter = 0;
 
+#if VOFA_OUTPUT_ENABLE
+        Logger_SendVOFA(&imu_att);
+#else
         LogFrame frame;
         frame.tick           = system_tick;
         frame.target_angle   = steering.rc_angle;
@@ -317,6 +320,7 @@ static void Control_Loop_500Hz(void) {
         frame.esc_pwm        = ESC_GetPWM(&esc);
 
         Logger_Log(&frame);
+#endif
     }
 }
 

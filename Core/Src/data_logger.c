@@ -44,6 +44,42 @@ static void fmt_f3(char *buf, int *pos, float val) {
     buf[(*pos)++] = '0' + (f % 10);
 }
 
+/*
+ * VOFA+ JustFloat 协议输出
+ * 帧格式: 每个float占4字节(小端) + 帧尾 00 00 80 7F
+ * 通道: roll, pitch, yaw (deg) + gx, gy, gz (dps)
+ */
+void Logger_SendVOFA(const IMU_Attitude *att) {
+    uint8_t buf[28];  // 6 floats * 4 + 4 tail
+    uint8_t *p = buf;
+
+    if (log_uart == NULL) return;
+
+    float data[6];
+    data[0] = att->roll;
+    data[1] = att->pitch;
+    data[2] = att->yaw;
+    data[3] = att->gyro_x;
+    data[4] = att->gyro_y;
+    data[5] = att->gyro_z;
+
+    for (int i = 0; i < 6; i++) {
+        uint32_t bits;
+        memcpy(&bits, &data[i], 4);
+        *p++ = (uint8_t)(bits);
+        *p++ = (uint8_t)(bits >> 8);
+        *p++ = (uint8_t)(bits >> 16);
+        *p++ = (uint8_t)(bits >> 24);
+    }
+    /* 帧尾: float +inf (0x7F800000, little-endian) */
+    *p++ = 0x00;
+    *p++ = 0x00;
+    *p++ = 0x80;
+    *p++ = 0x7F;
+
+    HAL_UART_Transmit(log_uart, buf, 28, 20);
+}
+
 void Logger_Log(const LogFrame *frame) {
     char buf[160];
     int pos = 0;
