@@ -103,12 +103,12 @@ void MPU6050_ScaleData(const MPU6050_RawData *raw,
     /* 角速度: dps */
     scaled->gx = (float)raw->gx / gyro_lsb_per_dps;
     scaled->gy = (float)raw->gy / gyro_lsb_per_dps;
-    scaled->gz = (float)raw->gz / gyro_lsb_per_dps;
+    scaled->gz = (float)raw->gz / gyro_lsb_per_dps * GYRO_SCALE_FACTOR;
 
-    /* 加速度: g → m/s² */
-    scaled->ax = (float)raw->ax / accel_lsb_per_g * 9.80665f;
-    scaled->ay = (float)raw->ay / accel_lsb_per_g * 9.80665f;
-    scaled->az = (float)raw->az / accel_lsb_per_g * 9.80665f;
+    /* 加速度: g */
+    scaled->ax = (float)raw->ax / accel_lsb_per_g;
+    scaled->ay = (float)raw->ay / accel_lsb_per_g;
+    scaled->az = (float)raw->az / accel_lsb_per_g;
 
     /* 温度 */
     scaled->temp_c = (float)raw->temp / 340.0f + 36.53f;

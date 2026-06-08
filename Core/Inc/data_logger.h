@@ -19,6 +19,10 @@ typedef struct {
     float    target_angle;      /* 目标转向角 */
     float    current_yaw;       /* IMU解算Yaw */
     float    gyro_z;            /* 陀螺仪Z轴角速度 */
+    float    imu_alpha;         /* IMU动态互补滤波权重 */
+    float    gyro_z_offset;     /* Z轴陀螺零偏估计 */
+    uint8_t  zero_allowed;      /* 当前是否允许零偏更新 */
+    uint8_t  imu_static;        /* 当前是否已进入零偏更新状态 */
     float    pd_output;         /* PD控制器输出 */
     uint32_t servo_pwm;         /* 舵机输出PWM */
     float    throttle_input;    /* 油门输入归一化值 */

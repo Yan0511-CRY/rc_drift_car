@@ -22,16 +22,16 @@
 #define MPU6050_REG_PWR_MGMT1    0x6B
 #define MPU6050_REG_WHO_AM_I     0x75
 
-/* 量程枚举 */
-#define MPU6050_GYRO_FS_250    0x00
-#define MPU6050_GYRO_FS_500    0x01
-#define MPU6050_GYRO_FS_1000   0x02
-#define MPU6050_GYRO_FS_2000   0x03
+/* 量程枚举 (FS_SEL 在 bit[4:3], 需左移3位写入寄存器) */
+#define MPU6050_GYRO_FS_250    0x00   /* FS_SEL=0 << 3 */
+#define MPU6050_GYRO_FS_500    0x08   /* FS_SEL=1 << 3 */
+#define MPU6050_GYRO_FS_1000   0x10   /* FS_SEL=2 << 3 */
+#define MPU6050_GYRO_FS_2000   0x18   /* FS_SEL=3 << 3 */
 
-#define MPU6050_ACCEL_FS_2G    0x00
-#define MPU6050_ACCEL_FS_4G    0x01
-#define MPU6050_ACCEL_FS_8G    0x02
-#define MPU6050_ACCEL_FS_16G   0x03
+#define MPU6050_ACCEL_FS_2G    0x00   /* AFS_SEL=0 << 3 */
+#define MPU6050_ACCEL_FS_4G    0x08   /* AFS_SEL=1 << 3 */
+#define MPU6050_ACCEL_FS_8G    0x10   /* AFS_SEL=2 << 3 */
+#define MPU6050_ACCEL_FS_16G   0x18   /* AFS_SEL=3 << 3 */
 
 /* ==================== 数据结构 ==================== */
 typedef struct {
@@ -41,7 +41,7 @@ typedef struct {
 } MPU6050_RawData;
 
 typedef struct {
-    float ax, ay, az;        /* 加速度 m/s² */
+    float ax, ay, az;        /* 加速度 g */
     float gx, gy, gz;        /* 角速度 dps */
     float temp_c;            /* 温度 ℃ */
 } MPU6050_ScaledData;

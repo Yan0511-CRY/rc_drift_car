@@ -30,6 +30,10 @@
 #define MPU6050_GYRO_FS     MPU6050_GYRO_FS_1000  // ±1000dps
 #define MPU6050_ACCEL_FS    MPU6050_ACCEL_FS_4G   // ±4g
 
+/* 陀螺仪增益校准系数: GYRO_SCALE_FACTOR = 360° / 实测yaw度数
+ * 默认1.0，校准后根据实测值修改。标称32.8 LSB/dps与实际芯片可能有偏差 */
+#define GYRO_SCALE_FACTOR   1.20f    /* TODO: 精确校准后更新此值 */
+
 /* 启动时零点校准采样次数 */
 #define GYRO_CALIB_SAMPLES  500U
 /* 零速检测阈值 (dps)，低于此值认为静止，自动更新offset */
@@ -40,6 +44,24 @@
 /* ==================== 互补滤波器参数 ==================== */
 #define COMP_FILTER_ALPHA   0.96f   // 典型的 0.96~0.98，越大越信任陀螺仪
 #define COMP_FILTER_DT      0.002f  // = 1/500Hz
+#define IMU_ALPHA_BASE      0.96f
+#define IMU_ALPHA_MAX       0.998f
+#define IMU_ACCEL_NORM_IDLE 1.0f
+#define IMU_ACCEL_NORM_AGGRESSIVE 2.5f
+
+/* ==================== IMU 零偏在线估计 ==================== */
+#define IMU_KALMAN_P_INIT   1.0f
+#define IMU_KALMAN_Q        1e-6f
+#define IMU_KALMAN_R        1e-2f
+#define IMU_KALMAN_RC_NEAR_R_SCALE 10.0f
+#define IMU_RC_CENTER_THRESHOLD      0.05f
+#define IMU_RC_NEAR_CENTER_THRESHOLD 0.15f
+#define IMU_RC_CENTER_GYRO_MULT      2.0f
+#define IMU_RC_NEAR_GYRO_MULT        4.0f
+/* Online yaw-bias updates must be stricter than normal zero-rate detection.
+ * RC stick center is only a hint; physical IMU still has to look quiet. */
+#define IMU_ZERO_UPDATE_RATE_THRESHOLD 1.0f
+#define IMU_ZERO_ACCEL_TOLERANCE       0.12f
 
 /* ==================== 陀螺仪转向控制模式 ==================== */
 /*
@@ -95,6 +117,13 @@
 #define RC_PWM_CENTER       1500
 #define RC_DEADBAND         20      // 摇杆死区 us
 
+/* PWM 接收机引脚 (HotRC F-06, 独立PWM输出) */
+/* CubeMX配置: PA4→GPIO_EXTI4, PA5→GPIO_EXTI5, 双沿触发, 上拉 */
+#define RC_STEERING_PORT    GPIOA
+#define RC_STEERING_PIN     GPIO_PIN_4
+#define RC_THROTTLE_PORT    GPIOA
+#define RC_THROTTLE_PIN     GPIO_PIN_5
+
 /* ==================== 数据日志 ==================== */
 #define LOG_UART            huart1
 #define LOG_BAUDRATE        115200
@@ -103,6 +132,14 @@
 
 /* VOFA+ 上位机 JustFloat 输出开关 (启用则关闭文本日志) */
 #define VOFA_OUTPUT_ENABLE  1       // 1=VOFA+陀螺仪3D可视化, 0=文本日志
+
+/* ==================== OLED 显示屏 (SSD1306, I2C2) ==================== */
+/* 引脚: PB3-SCL / PB10-SDA (CubeMX中配置为I2C2)
+ * 分辨率: 128×64, 驱动芯片: SSD1306
+ * 0.96寸蓝色/白色OLED通用模块 */
+#define OLED_I2C            hi2c2           /* 用户CubeMX生成的外设句柄 */
+#define OLED_REFRESH_DIV    50              /* 每 N 次控制循环刷新一次屏幕 (500/50=10Hz) */
+#define OLED_ENABLE         1               /* 1=启用OLED, 0=禁用 */
 
 /* ==================== 引脚定义 (按实际接线修改) ==================== */
 #define SERVO_TIM           htim2
