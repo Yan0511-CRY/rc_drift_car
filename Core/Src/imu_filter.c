@@ -34,6 +34,11 @@
 /* 零漂补偿模块全局状态 */
 static IMU_ZeroDriftComp zd_comp;
 
+/* 三轴角速度 IIR 低通滤波状态（静态，上电自动清零） */
+static float gyro_soft_lpf_gx = 0.0f;
+static float gyro_soft_lpf_gy = 0.0f;
+static float gyro_soft_lpf_gz = 0.0f;
+
 /* RC辅助归零信号（从main.c传入）*/
 static float rc_throttle_norm = 0.0f;   /* -1.0 ~ 1.0 */
 static float rc_steering_norm = 0.0f;   /* -1.0 ~ 1.0 */
@@ -151,6 +156,23 @@ void IMU_Filter_Init(float gyro_offset[3]) {
 void IMU_Filter_Update(float gx, float gy, float gz,
                        float ax, float ay, float az,
                        float dt, IMU_Attitude *att) {
+    /* ── 软件 IIR 低通滤波（三轴统一处理） ──
+     * 作用时机：在原始数据进入互补滤波/积分之前
+     * 公式：y[n] = α * y[n-1] + (1-α) * x[n]
+     * 目的：抑制电机振动和机械谐振引入的高频噪声
+     * 注意：只滤波 gx/gy/gz，不滤波 ax/ay/az（加速度计不需要） */
+    gyro_soft_lpf_gx = IMU_GYRO_SOFT_LPF_ALPHA * gyro_soft_lpf_gx
+                     + (1.0f - IMU_GYRO_SOFT_LPF_ALPHA) * gx;
+    gyro_soft_lpf_gy = IMU_GYRO_SOFT_LPF_ALPHA * gyro_soft_lpf_gy
+                     + (1.0f - IMU_GYRO_SOFT_LPF_ALPHA) * gy;
+    gyro_soft_lpf_gz = IMU_GYRO_SOFT_LPF_ALPHA * gyro_soft_lpf_gz
+                     + (1.0f - IMU_GYRO_SOFT_LPF_ALPHA) * gz;
+
+    /* 用滤波后的角速度替换原始值，后续所有计算都使用滤波结果 */
+    gx = gyro_soft_lpf_gx;
+    gy = gyro_soft_lpf_gy;
+    gz = gyro_soft_lpf_gz;
+
     float accel_pitch, accel_roll;
 
     /* 1. 去除陀螺仪零偏（零偏由卡尔曼在线估计） */

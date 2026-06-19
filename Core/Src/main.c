@@ -80,7 +80,9 @@ static volatile uint32_t  rc_channels[6] = {
 };  /* 6 通道 RC PPM 信号脉宽（μs），初始化为中值 */
 
 /* ──────────────── 计数器 ──────────────── */
+#if UART_DEBUG_ENABLE
 static uint32_t log_counter  = 0;   /* 日志分频计数器 */
+#endif
 static uint32_t system_tick  = 0;   /* 系统节拍（每 2ms +1） */
 static uint32_t oled_counter = 0;   /* OLED 刷新分频计数器 */
 
@@ -169,9 +171,11 @@ int main(void)
     Steering_Init(&steering);             /* 舵机中值 & PID 参数初始化 */
     ESC_Init(&esc);                       /* 电调中值 & 安全范围初始化 */
 
+#if UART_DEBUG_ENABLE
     /* ── 数据记录器初始化 ── */
     Logger_Init(&huart1);                 /* 启动 UART DMA 发送 */
 
+#endif
     /* ── PWM 输出启动 (TIM2: CH1=舵机, CH2=油门) ── */
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
@@ -679,6 +683,7 @@ static void Control_Loop_500Hz(void) {
     }
 #endif
 
+#if UART_DEBUG_ENABLE
     /* ── ⑧ 数据日志分频输出 ── */
     log_counter++;
     if (log_counter >= LOG_DIVIDER) {
@@ -706,6 +711,7 @@ static void Control_Loop_500Hz(void) {
         Logger_Log(&frame);
 #endif
     }
+#endif
 }
 
 /* USER CODE END 4 */

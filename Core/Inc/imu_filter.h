@@ -50,6 +50,13 @@ void IMU_SetRCInputs(float throttle_norm, float steering_norm);
 
 /* ==================== API ==================== */
 void IMU_Filter_Init(float gyro_offset[3]);
+
+/* 软件 IIR 低通滤波器系数 (0~1)
+ * 越大越平滑，但相位滞后越大
+ * 典型值: 0.85~0.95（配合硬件 DLPF=0x00, ~256Hz）
+ * 振动噪声严重时可提高到 0.95~0.98 */
+#define IMU_GYRO_SOFT_LPF_ALPHA    0.88f
+
 void IMU_Filter_Update(float gx, float gy, float gz,
                        float ax, float ay, float az,
                        float dt, IMU_Attitude *att);

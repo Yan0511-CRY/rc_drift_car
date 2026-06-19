@@ -75,7 +75,7 @@
  *    PID闭环追踪，error = 目标角速度 - 实测角速度
  *    遥控回中 = 车必须停止旋转 (更激进的闭环控制)
  */
-#define GYRO_CONTROL_MODE   0       // 0=增益反打, 1=角速度追踪
+#define GYRO_CONTROL_MODE   1       // 0=增益反打, 1=角速度追踪
 
 /* ---- 模式 0 参数: 增益反打 ---- */
 #define GYRO_GAIN           0.10f   // 陀螺仪增益 (度舵机/每dps角速度)
@@ -125,6 +125,7 @@
 #define RC_THROTTLE_PIN     GPIO_PIN_5
 
 /* ==================== 数据日志 ==================== */
+#define UART_DEBUG_ENABLE   0       // 1=启用串口调试输出, 0=完全关闭 (不影响OLED)
 #define LOG_UART            huart1
 #define LOG_BAUDRATE        115200
 /* 每 N 次控制循环输出一行日志 (1=每次, 10=每10次) */
