@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "data_logger.h"    /* Logger_UART_IRQHandler: 非阻塞 UART TX 中断处理 */
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -241,5 +242,15 @@ void TIM4_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+
+/**
+  * @brief USART1 全局中断处理
+  * 用于非阻塞日志发送: TXE 中断逐字节发送环形缓冲区数据
+  * 优先级 5 (低于 TIM4 控制循环=3, EXTI 接收机=0)
+  */
+void USART1_IRQHandler(void)
+{
+    Logger_UART_IRQHandler();
+}
 
 /* USER CODE END 1 */

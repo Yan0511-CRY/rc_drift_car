@@ -349,7 +349,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* USER CODE BEGIN USART1_MspInit 1 */
-
+    /* 启用 USART1 中断 (低优先级)，用于非阻塞 TX 发送 (蓝牙/串口日志) */
+    HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(USART1_IRQn);
     /* USER CODE END USART1_MspInit 1 */
 
   }

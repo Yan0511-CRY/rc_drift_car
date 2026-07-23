@@ -206,6 +206,9 @@ void IMU_Filter_Update(float gx, float gy, float gz,
     att->gyro_z  = gz;
     att->gyro_y  = gy;
     att->gyro_x  = gx;
+    att->accel_x = ax;   /* 原始加速度计，供 CSV 日志使用 */
+    att->accel_y = ay;
+    att->accel_z = az;
     att->alpha = alpha;
     att->gyro_z_offset = zd_comp.gyro_offset[2];
     att->zero_allowed = last_zero_allowed;

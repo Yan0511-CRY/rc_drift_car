@@ -124,15 +124,22 @@
 #define RC_THROTTLE_PORT    GPIOA
 #define RC_THROTTLE_PIN     GPIO_PIN_5
 
-/* ==================== 数据日志 ==================== */
-#define UART_DEBUG_ENABLE   0       // 1=启用串口调试输出, 0=完全关闭 (不影响OLED)
+/* ==================== 数据日志 (蓝牙 SPP / 有线 UART 通用) ==================== */
+#define UART_DEBUG_ENABLE   1       // 1=启用串口/蓝牙调试输出, 0=完全关闭 (不影响OLED)
 #define LOG_UART            huart1
+/* 波特率选择:
+ *   115200 — 蓝牙 HC-05/HC-06 稳定首选 (默认)
+ *   230400 — 数据更密集，模块支持时使用
+ *   921600 — 有线 USB-TTL 高速场景 */
 #define LOG_BAUDRATE        115200
-/* 每 N 次控制循环输出一行日志 (1=每次, 10=每10次) */
+/* 每 N 次控制循环输出一帧日志 (1=每次, 10=每10次) */
 #define LOG_DIVIDER         5       // 500Hz / 5 = 100Hz日志输出
 
 /* VOFA+ 上位机 JustFloat 输出开关 (启用则关闭文本日志) */
-#define VOFA_OUTPUT_ENABLE  1       // 1=VOFA+陀螺仪3D可视化, 0=文本日志
+#define VOFA_OUTPUT_ENABLE  1       // 1=VOFA+陀螺仪3D可视化, 0=CSV文本日志
+
+/* 非阻塞 UART 发送缓冲区大小 (字节)，环形缓冲区 */
+#define LOG_TX_BUF_SIZE     256
 
 /* ==================== OLED 显示屏 (SSD1306, I2C2) ==================== */
 /* 引脚: PB3-SCL / PB10-SDA (CubeMX中配置为I2C2)

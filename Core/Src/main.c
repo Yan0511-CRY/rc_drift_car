@@ -172,8 +172,8 @@ int main(void)
     ESC_Init(&esc);                       /* 电调中值 & 安全范围初始化 */
 
 #if UART_DEBUG_ENABLE
-    /* ── 数据记录器初始化 ── */
-    Logger_Init(&huart1);                 /* 启动 UART DMA 发送 */
+    /* ── 数据记录器初始化 (非阻塞 TX: 环形缓冲 + TXE 中断) ── */
+    Logger_Init(&huart1);
 
 #endif
     /* ── PWM 输出启动 (TIM2: CH1=舵机, CH2=油门) ── */
@@ -451,7 +451,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 921600;
+  huart1.Init.BaudRate = LOG_BAUDRATE;  // 从 system_config.h 读取 (默认 115200)
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -693,7 +693,7 @@ static void Control_Loop_500Hz(void) {
         /* VOFA+ JustFloat 协议: 10 个 float (40 字节) + 帧尾 */
         Logger_SendVOFA(&imu_att);
 #else
-        /* ASCII 文本帧格式: 8 字段, 逗号分隔, 换行结束 */
+        /* CSV 文本帧: 14 字段 (姿态+陀螺+加速+RC+PWM) */
         LogFrame frame;
         frame.tick           = system_tick;               /* 系统节拍计数 */
         frame.target_angle   = steering.rc_angle;         /* RC 目标转向角度 */
@@ -708,7 +708,7 @@ static void Control_Loop_500Hz(void) {
         frame.throttle_input = esc.throttle_output;       /* 油门输出值 */
         frame.esc_pwm        = ESC_GetPWM(&esc);          /* 最终电调 PWM */
 
-        Logger_Log(&frame);
+        Logger_SendCSV(&frame, &imu_att);
 #endif
     }
 #endif

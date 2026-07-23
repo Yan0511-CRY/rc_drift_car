@@ -21,6 +21,9 @@ typedef struct {
     float gyro_z;       /* Z轴角速度 (dps)，已去除零偏 */
     float gyro_y;       /* Y轴角速度 (dps) */
     float gyro_x;       /* X轴角速度 (dps) */
+    float accel_x;      /* X轴加速度 (g)，原始值 */
+    float accel_y;      /* Y轴加速度 (g)，原始值 */
+    float accel_z;      /* Z轴加速度 (g)，原始值 */
     float alpha;        /* 当前动态互补滤波权重 */
     float gyro_z_offset;/* 当前Z轴陀螺零偏估计 (dps) */
     uint8_t zero_allowed; /* 当前是否允许零偏更新 */
